@@ -42,42 +42,25 @@
 # If the algorithm reaches a constant, such as 0, then the length is 1.
 
 def solution(n, b):
+    k = len(n)
     minion_ids = []
-    minion_ids.append(n)
-    cycle_length = 0
-    while True:
-        nextMinionId = getNextMinionId(minion_ids[-1])
-        print('nextMinionId:', nextMinionId)
-        if nextMinionId not in minion_ids:
-            minion_ids.append(nextMinionId)
+    current_minion = n
+    while current_minion not in minion_ids:
+        minion_ids.append(current_minion)
+        s = sorted(current_minion)
+        x_descend = ''.join(s[::-1])
+        y_ascend = ''.join(s)
+
+        if b == 10:
+            int_id = int(x_descend) - int(y_ascend)
+            current_minion = str(int_id)
         else:
-            first_repeat = minion_ids.index(nextMinionId)
-            cycle_length = len(minion_ids) - first_repeat
-            break
-    print(cycle_length)
-    return cycle_length
+            int_m_10 = int(to_base_10(x_descend, b)) - \
+                int(to_base_10(y_ascend, b))
+            current_minion = to_base_n(str(int_m_10), b)
 
-
-def getNextMinionId(n):
-    # digits of n in descending ordner -> x
-    x = int(''.join(str(i) for i in sorted(n, reverse=True)))
-    print('x:', x)
-    # digits of n in accendding order -> y
-    y = int(''.join(str(i) for i in sorted(n)))
-    print('y:', y)
-    # subtrace x from y -> z
-    z = x - y
-    print('z:', str(z).zfill(numlen(x)))
-    return str(z).zfill(numlen(x))
-
-
-def numlen(num):
-    result = 1
-    divider = 10
-    while num % divider != num:
-        divider *= 10
-        result += 1
-    return result
+        current_minion = ('0' * (k - len(current_minion))) + current_minion
+    return len(minion_ids) - minion_ids.index(current_minion)
 
 
 def to_base_n(int_base_10, n):
@@ -90,9 +73,6 @@ def to_base_n(int_base_10, n):
     digits_base_n.append(str(residual))
     return ''.join(digits_base_n[::-1])
 
-#  to_base_10(str: int_base_n, int: n) -> str: str_base_10
-#  2 <= n < 10
-
 
 def to_base_10(int_base_n, n):
     x = list(int_base_n[::-1])
@@ -102,5 +82,5 @@ def to_base_10(int_base_n, n):
     return str(y_base_10)
 
 
-solution('1998', 10)  # 1
-# solution('210022', 3)  # 3
+print(solution('1998', 10))  # 1
+print(solution('210022', 3))  # 3
